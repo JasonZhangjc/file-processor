@@ -51,6 +51,8 @@ class PersistData:
         
         cursor.close()
         connection.commit()
+        return records
+
 
     def write_to_pg(self, target_table):
         connection = psycopg2.connect(user=self.pg_user, 

@@ -1,6 +1,26 @@
 from processor import ingest, persist
 import logging
 import logging.config
+from flask import Flask, request
+
+
+
+app = Flask(__name__)
+
+@app.route('/courses', methods=['GET'])
+def get_courses():
+    dbObject = persist.PersistData("postgres")
+    courses = dbObject.read_from_pg("futurexschema.futurex_course_catalog")
+    return "courses are - " + str(courses)
+
+@app.route('/courses', methods=['POST'])
+def insert_courses():
+    input_json = request.get_json(force=True)
+    print("input_json > " + str(input_json))
+    dbObject = persist.PersistData("postgres")
+    dbObject.write_from_json_to_pg("futurexschema.futurex_course_catalog", input_json)
+    return "success"
+
 
 class DriverProgram:
     logging.config.fileConfig("processor/resources/configs/logging.conf")
@@ -23,10 +43,11 @@ def print_hi(name):
 
 
 if __name__ == '__main__':
-    print("Entering the main method")
+    app.run(port=8005, debug=True)
+    # print("Entering the main method")
+    # print_hi('vscode')
+    # driver = DriverProgram("json")
+    # driver.my_function()
 
-    print_hi('vscode')
-    driver = DriverProgram("json")
-    driver.my_function()
 
 
